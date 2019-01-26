@@ -1,7 +1,7 @@
 # VDP-16 (aKa PatrickBoy)
 The VDP-16 is a fantasy arcade board to allow everyone to make web games which look like the 16-bit machines. It does so by providing a set of accurate tools and limitations from the time, like indexed color graphics, parallax layers and the mode 7.
 
-Although it reproduces an old school environment, it is not strictly limited to it; it aims to bring you the "feeling" of what it is to develop for a 16-bit console. Limitations are designed to help you take the best out of the engine, have fun optimizing and understanding every aspect of it with rewarding results. It will also teach you how to make an efficient game. My reference for many technical choices was the Sega arcade board System 16.
+Although it reproduces an old school environment, it is not strictly limited to it; it aims to bring you the "feeling" of what it is to develop for a 16-bit console. Limitations are designed to help you take the best out of the engine, have fun optimizing and understanding every aspect of it with rewarding results. It also aims to teach you how to code your games more efficiently. My reference for many technical choices was the Sega arcade board System 16.
 
 The idea came as I was trying to develop a space shooter for the web. I wanted to used paletted graphics to alternate colors and make fun effects, and I also wanted parallax, screen tearing and mode 7 for some effects. As awesome as frameworks such as Pixi are, they just don't provide this functionality and it is hard to do it on your own. So I did it, and later found out that it was more fun if you had actually limitations. Having 8 layers and 256 colors per sprite like initially seems nice, but like most people I work much better within a budget. For me that meant maximize and having to make creative choices based on what I had. Therefore the limitations were born, and refined a lot over time, always in a goal to reduce the budget for games: if you use this or that functionality you lose something else, so don't over-engineer things, just choose what is appropriate for your game design, or let the limitations guide you on what you can achieve. Think having only one background layer and a few dozen sprites is limiting?  Look at this for example, it only uses one layer and much less sprites than the VDP-16 allows.
 
@@ -67,54 +67,6 @@ Resulting tilemap:
 
 [Reference for these images, and additional explanations](https://www.coranac.com/tonc/text/bitmaps.htm).
 
-
-
-# Using graphics and converting data
-The VDP-16 comes bundled with a "packer" application. It can either be ran by `npm run pack-gfx` or by launching `packer.exe`.
-
-The packer works with images (PNG) and Tiled (tmx) tilemap files. It also has a script called `packer-main.js` which must be inside the `gfx/` directory. This script tells the packer which graphics to include, in which palette. The graphics are then converted, indexed and written to the corresponding external graphics data files (`build/sprites.png`, `build/maps.png` and `build/palettes.png`).
-
-```
-config({ debug: true }, () => {
-
-	palette('characters', () => {
-		sprite('rock', 'gfx/rock.png');
-		tileset('mario', 'gfx/mario.png', 16, 16);
-	});
-
-	palette('background', () => {
-		tiledMap('background', 'gfx/background', { tileWidth: 16, tileHeight: 16, tilesetWidth: 32, tilesetHeight: 32 });
-	});
-});
-```
-
-This script defines two palettes ('characters' and 'background') and adds two sprites in the former: a rock (`gfx/rock.png`) and a "tileset", which is as mentioned earlier a tiled sprite. This means in this case that the `gfx/mario.png` file has more than one tile for our character. For instance it may do 64x16, which indicates that there are 4 16x16 tiles. We can then refer to these tiles individually when drawing the sprite 'mario' as an object on the screen, to create an animation.
-
-The second palette, 'background', contains a tiled map (tmx file). Note the lack of extension: the file will be created by the packer, so you don't need to provide more than just an image that represents the contents of your background. The image will be divided in tiles (16x16 in this case) and put into a tileset of up to 32x32 tiles (1024; the hard limit in a single layer is 4096 tiles), written as `gfx/background-til.png`. Your image should have been thought to be subdivided in tiles. The packer will also create a `gfx/background.tmx`. This file can be opened in TMX to modify and extend your level. You may even add additional tiles to `gfx/background-til.png` following the same scheme. The next time you start the packer, it will not pick up the original `gfx/background.png` image because the `gfx/background.tmx` exists: it will pack it and the tileset instead (you may thus delete `gfx/background.png`).
-
-Graphics are currently packed in the most basic way: it starts at the top-left corner and advances from left to right. When there's no more room to add an item, it switches to the next row, whose height is the maximal height of all elements which have been added to it. Because of that, if you add a sprite of 16x200 and then many sprites of 16x16, you'll waste all the space below the other sprites, since it can't be used (the next line will start at (x, y) = (0, 200)). In case you're short of memory, you may want to arrange your graphics with that in mind. Just change the order in which you add them.
-
-
-## Drawing graphics with the VDP-16 in mind
-The VDP-16 has some limitations in the format of the graphics, mainly aimed to to reduce the difficulty of drawing graphics and guide you to how it's fun to use. It also allows for putting much more data in less space, ideal for web games.
-
-When drawing images that will be used as tilemap layers, preferrably **set up a grid in your drawing software.** As mentioned earlier, you should stick to 8x8 or 16x16 for your tiles, these are common and convenient formats given the screen resolution. On GIMP you can enable the grid by pressing slash and typing grid, then do View -> Show grid. It allows to quickly determine when objects are aligned or not.
-
-![Sample grid in GIMP](doc/gimp-grid-example.png)
-
-In this example, we can get away with just two tiles: one for the background and one for the bench.
-
-![Sample misaligned grid](doc/gimp-grid-misaligned-example.png)
-
-However in this example, the third bench is misaligned and as such will require 2 more tiles, raising the total to four. Drawing big images without taking that in account may get your tile count overboard. Remember that the main advantage of tiled graphics is to reduce memory a lot. If you don't use this advantage, the 1 MB cart limit will be hit very quickly, even with 4-bit graphics data. You may also hit the 4096 tiles limit: maps can not hold more than that since the entries are 16-bit numbers and the top 4 bits are used to offset the palette index, allowing to use up to 16 distinct palettes per background layer.
-
-**Resist the urge to use many palettes.** It's not going to look much better than well made pixel art, and it's going to take you much more time to draw, increasing the chances that the result is bad more than anything. One palette per background layer, and 2-4 shared among all the common sprites for a given scene should be plenty.
-
-**Alpha channel is not used** other than to determine which colors get assigned the index 0 (transparent). No semi-transparency information can be directly embedded in the source graphics: you can only make a set of objects or a layer semi-transparent as specified in the Transparency section. In general, you need to forget about semi-transparency in the first place, since it's reserved for special effects and takes time to master properly. Think of it as the cherry over the cake rather than an essential part of your graphics to constantly worry about.
-
-**Colors are ultimately converted to 12-bit #rgb format**. Therefore gradients may not look so great. The 12-bit format was chosen because it's already used in CSS and can be easily represented when looking at the HTML notation of any color: just skip every other digit. In the example below `f898c0` will be translated as `#f9c`, then displayed as `#ff99cc` on a modern display.
-
-![Color dialog in GIMP](doc/gimp-color-dialog.png)
 
 
 # The script API
@@ -507,3 +459,53 @@ class VdpSprite {
 ```
 
 You may modify these properties to read from/write to alternate parts in the memory.
+
+# Using graphics and converting data
+The VDP-16 comes bundled with a "packer" application. It can either be ran by `npm run pack-gfx` or by launching `packer.exe`.
+
+The packer works with images (PNG) and Tiled (tmx) tilemap files. It also has a script called `packer-main.js` which must be inside the `gfx/` directory. This script tells the packer which graphics to include, in which palette. The graphics are then converted, indexed and written to the corresponding external graphics data files (`build/sprites.png`, `build/maps.png` and `build/palettes.png`).
+
+```
+config({ debug: true }, () => {
+
+	palette('characters', () => {
+		sprite('rock', 'gfx/rock.png');
+		tileset('mario', 'gfx/mario.png', 16, 16);
+	});
+
+	palette('background', () => {
+		tiledMap('background', 'gfx/background', { tileWidth: 16, tileHeight: 16, tilesetWidth: 32, tilesetHeight: 32 });
+	});
+});
+```
+
+This script defines two palettes ('characters' and 'background') and adds two sprites in the former: a rock (`gfx/rock.png`) and a "tileset", which is as mentioned earlier a tiled sprite. This means in this case that the `gfx/mario.png` file has more than one tile for our character. For instance it may do 64x16, which indicates that there are 4 16x16 tiles. We can then refer to these tiles individually when drawing the sprite 'mario' as an object on the screen, to create an animation.
+
+The second palette, 'background', contains a tiled map (tmx file). Note the lack of extension: the file will be created by the packer, so you don't need to provide more than just an image that represents the contents of your background. The image will be divided in tiles (16x16 in this case) and put into a tileset of up to 32x32 tiles (1024; the hard limit in a single layer is 4096 tiles), written as `gfx/background-til.png`. Your image should have been thought to be subdivided in tiles. The packer will also create a `gfx/background.tmx`. This file can be opened in TMX to modify and extend your level. You may even add additional tiles to `gfx/background-til.png` following the same scheme. The next time you start the packer, it will not pick up the original `gfx/background.png` image because the `gfx/background.tmx` exists: it will pack it and the tileset instead (you may thus delete `gfx/background.png`).
+
+Graphics are currently packed in the most basic way: it starts at the top-left corner and advances from left to right. When there's no more room to add an item, it switches to the next row, whose height is the maximal height of all elements which have been added to it. Because of that, if you add a sprite of 16x200 and then many sprites of 16x16, you'll waste all the space below the other sprites, since it can't be used (the next line will start at (x, y) = (0, 200)). In case you're short of memory, you may want to arrange your graphics with that in mind. Just change the order in which you add them.
+
+
+## Drawing graphics with the VDP-16 in mind
+The VDP-16 has some limitations in the format of the graphics, mainly aimed to to reduce the difficulty of drawing graphics and guide you to how it's fun to use. It also allows for putting much more data in less space, ideal for web games.
+
+When drawing images that will be used as tilemap layers, preferrably **set up a grid in your drawing software.** As mentioned earlier, you should stick to 8x8 or 16x16 for your tiles, these are common and convenient formats given the screen resolution. On GIMP you can enable the grid by pressing slash and typing grid, then do View -> Show grid. It allows to quickly determine when objects are aligned or not.
+
+![Sample grid in GIMP](doc/gimp-grid-example.png)
+
+In this example, we can get away with just two tiles: one for the background and one for the bench.
+
+![Sample misaligned grid](doc/gimp-grid-misaligned-example.png)
+
+However in this example, the third bench is misaligned and as such will require 2 more tiles, raising the total to four. Drawing big images without taking that in account may get your tile count overboard. Remember that the main advantage of tiled graphics is to reduce memory a lot. If you don't use this advantage, the 1 MB cart limit will be hit very quickly, even with 4-bit graphics data. You may also hit the 4096 tiles limit: maps can not hold more than that since the entries are 16-bit numbers and the top 4 bits are used to offset the palette index, allowing to use up to 16 distinct palettes per background layer.
+
+**Convert the first version of your background, then edit it with [Tiled](https://www.mapeditor.org/)**; once your map has been converted the first time by the packer, it will generate a `tmx` and a `-til.png` file with the same name as your original image. Use Tiled to extend your map using the existing tiles, or add tiles to the tileset in the same way. See the chapter about packing graphics for more information.
+
+**Resist the urge to use many palettes.** It's not going to look much better than well made pixel art, and it's going to take you much more time to draw, increasing the chances that the result is bad more than anything. One palette per background layer, and 2-4 shared among all the common sprites for a given scene should be plenty.
+
+**Alpha channel is not used** other than to determine which colors get assigned the index 0 (transparent). No semi-transparency information can be directly embedded in the source graphics: you can only make a set of objects or a layer semi-transparent as specified in the Transparency section. In general, you need to forget about semi-transparency in the first place, since it's reserved for special effects and takes time to master properly. Think of it as the cherry over the cake rather than an essential part of your graphics to constantly worry about.
+
+**Colors are ultimately converted to 12-bit #rgb format**. Therefore gradients may not look so great. The 12-bit format was chosen because it's already used in CSS and can be easily represented when looking at the HTML notation of any color: just skip every other digit. In the example below `f898c0` will be translated as `#f9c`, then displayed as `#ff99cc` on a modern display.
+
+![Color dialog in GIMP](doc/gimp-color-dialog.png)
+
