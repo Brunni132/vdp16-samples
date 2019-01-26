@@ -1,8 +1,0 @@
-Sur GBA aussi la transformation appliquée par la matrice est inversée :)
-https://www.coranac.com/tonc/text/affine.htm
-
-Très bonnes explications sur les tilesets et maps, indexation:
-https://www.coranac.com/tonc/text/regbg.htm
-
-Couleurs indexées:
-https://www.coranac.com/tonc/text/bitmaps.htm
