@@ -269,8 +269,10 @@ Sets the color replacement for a line only.
 Note that you can make transparent colors opaque using the color swap functionality. Typically, areas outside of a tilemap layer with `wrap: true` are drawn with the color 0 of the default palette for the map, and you may replace it with an opaque color (and reciprocally, you may make an opaque color transparent by replacing it with the index 0 of any palette). The `color-spot` sample retargets that palette entry to a grey tone so that everything outside of the layer is darkened.
 
 
-## LineTransformationArray
+## LineTransformationArray (per-line screen transformation)
 Allows to define a transformation per line on the screen for background layers only. Useful for raster effects (Sonic-like parallax scrolling, pseudo-3D mode 7, Hang On-like roads, …).
+
+It uses a matrix to make geometric transformation from a straight image to a distorted image, combining the following three basic operations: translation, rotation and scaling. More info [here](https://www.mathplanet.com/education/geometry/transformations/transformation-using-matrices).
 
 **Warning:** the per-line transformation works like the SNES and Game Boy Advance, meaning that the Y component is not inputted in the matrix transformation (this simplifies transformation calculations, since you'd have to subtract Y in an already pretty complex chain). Therefore, for simple transformations you need to add the line number by yourself on each line; if you set the identity matrix for every line, you'll just repeat the line 0 across the screen, getting weird vertical stripes, or nothing.
 
@@ -280,10 +282,10 @@ This example divides the line number by two, resulting in a scale by two. The `v
 
 ```
 function *main() {
-	const mat = vdp.mat3.create();
 	while (true) {
 		const array = new vdp.LineTransformationArray();
 		for (let line = 0; line < array.length; line++) {
+			const mat = vdp.mat3.create();
 			vdp.mat3.translate(mat, mat, [0, line / 2]);
 			array.setLine(line, mat);
 		}
