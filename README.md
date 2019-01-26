@@ -272,7 +272,7 @@ Note that you can make transparent colors opaque using the color swap functional
 ## LineTransformationArray (per-line screen transformation)
 Allows to define a transformation per line on the screen for background layers only. Useful for raster effects (Sonic-like parallax scrolling, pseudo-3D mode 7, Hang On-like roads, …).
 
-It uses a matrix to make geometric transformation from a straight image to a distorted image, combining the following three basic operations: translation, rotation and scaling. More info [here](https://www.mathplanet.com/education/geometry/transformations/transformation-using-matrices).
+It uses a matrices to make geometric transformation from a straight image to a distorted image, combining the following three basic operations: translation, rotation and scaling. More info [here](https://www.mathplanet.com/education/geometry/transformations/transformation-using-matrices).
 
 **Warning:** the per-line transformation works like the SNES and Game Boy Advance, meaning that the Y component is not inputted in the matrix transformation (this simplifies transformation calculations, since you'd have to subtract Y in an already pretty complex chain). Therefore, for simple transformations you need to add the line number by yourself on each line; if you set the identity matrix for every line, you'll just repeat the line 0 across the screen, getting weird vertical stripes, or nothing.
 
