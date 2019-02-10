@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<title>VDP-16</title>
+	<style type="text/css">
+        body {
+            background: #111;
+            padding: 0;
+            margin: 0;
+        }
+
+		#content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+		}
+
+		canvas {
+            border: 1px solid #ccc;
+
+			image-rendering: optimizeSpeed;             /* Older versions of FF          */
+			image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+			image-rendering: -webkit-optimize-contrast; /* Safari                        */
+			image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+			image-rendering: pixelated;                 /* Awesome future-browsers       */
+			-ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+		}
+
+        #demos {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            color: #fff;
+        }
+
+        a {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        #demo-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        button {
+            height: 50px;
+        }
+
+        #explanation {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #source-code {
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        #back {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+        }
+	</style>
+</head>
+
+<body onhashchange="reload();">
+    <div id="content">
+        <canvas id="glCanvas" width="256" height="256" style="width: 512px; height: 512px;"></canvas>
+    </div>
+    <div id="demo-controls">
+        <button type="button" id="explanation">Info about this demo…</button>
+        <button type="button" id="source-code">Source code for this demo…</button>
+        <button type="button" id="back" onclick="window.history.back();">Go back to the demos…</button>
+    </div>
+    <div id="demos">
+        <h1>VDP-16 Demos</h1>
+        <p>This page just shows a summary about each demo. If you want more info about why it's interesting, click on the button "Info about this demo" on the top-right.</p>
+        <ul id="fileList">
+        </ul>
+        <p>Documentation (WIP): <a href="https://github.com/Brunni132/vdp16-samples/tree/gh-pages">link</a>
+    </div>
+
+    <script src="lib/vdp-lib.js"></script>
+    <script>
+        var demoList = [
+            { name: 'scrolling-background', description: 'Simple scrolling background.' },
+            { name: 'linescroll-and-rotate-palette', description: 'Same as the scrolling background, with simple effects that make it look alive. Uses only one static layer!', details: 'Uses per line transformations to create a parallax scrolling background with animated palette. Note that this screen would look very unattractive without the special effects (try it out!), yet nothing is done other than the parallax and cycling palette colors!' },
+            { name: 'platform', description: 'Small platformer. Use WASD and J=run, K=jump, or ↑↓←→ and C=run, V=jump.', details: 'Small platformer. Use WASD and J=run, K=jump, or ↑↓←→ and C=run, V=jump. It contains many functionalities of a Mario engine, and aims to show that it\'s not that complicated to code on your own, without complex framework. You can jump, run, skid, and have proper collisions. It\'s missing enemies and any sort of dynamic objects' },
+            { name: 'color-spot', description: 'Transparent spotlight circle of variable size, same effect used in Super Mario World.', details: 'Shows a circle of variable size around the character, using a similar technique to Super Mario World on the SNES. Instead of using the window, this uses one per-line scaled BG layer. You could make the circle as a sprite that goes through the background layer, but that\'d be too easy, and wouldn\'t allow drawing a perfect circle at any size. This uses background scaling to select every line a dark, a transparent (in the middle) and a dark area, out of a simple 8x1 map tile. If drawn by default, you have a dark background and one pixel clear, but by scaling by two you\'d get 2 clear pixels, and so on and so forth.' },
+            { name: 'mode7-simple', description: 'Navigate into a perspective layer using arrow keys or WASD.', details: 'The mode 7 consisted of using a rotation and a variable scale reprogrammed at every line (row) using so-called raster effects. It was already used in other arcades like the Namco System 24, but it became well known on the Super Nintendo for games such as Mario Kart or F-Zero.' },
+            { name: 'mode7', description: 'Shows how to make a mode 7, with objects placed on top (inverse matrix transformations). Useful if you want to go and make a F-Zero or Mario Kart like.' },
+            { name: 'wave-bg', description: 'Demoes a common effect of the time: screen distortion using per-line horizontal scrolling offset.', details: 'Distorts the background as a wave by using the per-line transformation functionality and a simple sinusoidal mathematical function.' },
+            { name: 'window', description: 'Another very common feature of the time: the window, allowing to put a static layer inside another.', details: 'Shows how to use the in-layer window. The window can be used to split a single layer in two, with some properties being able to be set differently (like a different map, independent scrolling or palette).' },
+            { name: 'color-swap', description: 'Simple demo for color swap, used to color the sky in 16 tones by reprogramming the background color by another one, as the screen is drawing vertically.' },
+            { name: 'advanced-color-swap', description: 'More advanced demo coloring the sky, in the same way as SNES/Amiga/etc. games often did.', details: 'Makes a gradient sky, common in demos of the era.', details: 'Shows how to create a gradient sky using line color replacements. This demo uses the color swap functionality to replace the background color from a solid color to a color that changes every line. Colors are arranged properly to create a gradient from blue to purple. By default, the VDP-16 can only display 16 shades for a pure gradient like this one, however by using a striped pattern we can create the illusion of the double like on the Super Nintendo. We can then alternate the stripes every other frame, and with retina persistence it will be indistinguishable from a solid color.' },
+            { name: 'fades', description: 'Demoes several historic techniques for fading the screen in/out.', details: 'Demoes several historic techniques for fading the screen in/out. You\'ll notably recognize the one used by Sega in Sonic and other titles, because this method allowed to create beautiful-looking fade in/out sequences by using a limited color set, so much that it was even used successfully on the Master System (Phantasy Star notably) which only had 64 distinct colors.' },
+
+            // { name: 'scroll-rotate-plane', description: 'Using both scroll and transformation (one for the whole screen).', details: '' },
+            // { name: 'map-tile-swap', description: 'Animates a tile from the background map by replacing it with another tile using video memory copies.', details: '' },
+            // { name: 'rainbow', description: 'Very simple demo that shows how to manipulate the background colors as hue/saturation/lightness, to rotate the colors of a layer like a rainbow.', details: '' },
+            // { name: 'cross-fade', description: 'Cross fade two layers.', details: 'Cross-fades (alpha blending) 2 planes by darkening and adding them together. The VDP-16 supports an unusual transparency scheme where the transparent objects are multiplied by a constant color and then added with the color of the background, itself multiplied by another constant color. This shows how to do simple semi-transparency by adding alpha * destination + (1 - alpha) * source.' },
+            // { name: 'obj-as-mask', description: 'Uses the properties of transparency to show a clear area inside a color effect. Basically per the doc, the VDP-16 can only blend top-level objects (highest priority) amongst lower-level, opaque objects. By using this, you may place another object on top of a transparent layer; since the priority of the object is higher than the BG, it will appear over the BG, and since the VDP-16 cannot mix 2 transparent sources, only the top-most object will appear transparent, directly over the opaque objects underneath, ignoring completely the transparent BG in this area. In this case we\'ve parametered the transparent objects to be invisible (1x destination + 0x source), so that they don\'t really appear, but just block the transparent BG, resulting in a mask effect.', details: '' },
+            // { name: 'shadow', description: 'Uses objects to cast shadows, with a different size depending on the target background layer (giving an illusion of depth). It works by superposing three objects: one is the Mario sprite, opaque, another is a 2-pixel-projected Mario with the transparent attribute and transparency configured to produce a shadow, and the third one is also a transparent, 5-pixel-projected Mario. Playing with the priorities and the fact that two transparent objects which overlap will not make a darker object but just replace each other, it projects a bigger shadow on the background plane (the 5px character) than on the front plane (the 2px character).', details: '' },
+            // { name: 'sprite-animation', description: 'Shows how to use the vdp.sprite() properties to animate a tileset.', details: '' },
+            // { name: 'sprite-limit', description: 'Shows what happens when you reach the sprite limitations. This demo shows a full screen stretched sprite that eats most of the capabilities of the sprite engine, and on top another image of Mario. Since the Mario object uses more sprite cells than the limit of 256 available (one cell is 16x16 pixels, even if your sprite uses only 1 pixel inside the cell: for instance a 17x16 pixel sprite takes 2 cells) it will only be drawn halfway. However when the sprite reaches the bounds of the screen, part of it becomes invisible and consumes less cells, allowing to draw more of it horizontally.', details: '' },
+            // { name: 'transformation-order', description: 'Explains some complex things about matrix calculation order. It\'s not an interesting demo by any mean, but you\'re welcome to check out the source.', details: '' },
+            // { name: 'your-game', description: 'Use the file your-game.js at the root to start your project! Modify it and reload.', details: '' },
+        ];
+
+        function reload() {
+            window.location.reload();
+        }
+
+        function appendDemos() {
+            var fileList = document.querySelector('#fileList');
+            for (let i = 0; i < demoList.length; i++) {
+                var block = document.createElement('li');
+                block.innerHTML = "<a href='#" + demoList[i].name + "'>" + demoList[i].name + ".js</a>: " + demoList[i].description;
+                fileList.appendChild(block);
+            }
+        }
+
+        var canvas = document.querySelector('#content');
+        var demos = document.querySelector('#demos');
+        var demoControls = document.querySelector('#demo-controls');
+        var explanationButton = document.querySelector('#explanation');
+        var sourceCodeButton = document.querySelector('#source-code');
+        var vdpLib = window['vdp-lib'];
+        var hash = window.location.hash;
+        var sourceFile = './your-game.js';
+
+        if (hash && hash.length > 1) {
+            var name = hash.slice(1);
+            if (hash != '#your-game') sourceFile = './samples/' + name + '.js';
+            demos.parentNode.removeChild(demos);
+            vdpLib.startStandalone('./build', sourceFile);
+
+            explanationButton.addEventListener('click', function () {
+                for (let i = 0; i < demoList.length; i++) {
+                    if (demoList[i].name === name) {
+                        alert(demoList[i].details || demoList[i].description);
+                    }
+                }
+            });
+
+            sourceCodeButton.addEventListener('click', function () {
+                window.location = sourceFile;
+            });
+        } else {
+            canvas.parentNode.removeChild(canvas);
+            demos.parentNode.removeChild(demoControls);
+            appendDemos();
+        }
+    </script>
+</body>
+</html>
