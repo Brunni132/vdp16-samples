@@ -427,8 +427,8 @@ class VdpMap {
 	designTileset: string; // name of the tileset (VdpSprite)
 	designPalette: string; // name of the first palette (takes precedence over the one defined in the tileset); tiles can use this and the next 15 palettes via the bits 12-15 in the tile number.
 
-	// Adds x and y to the current address and sets w/h. Modifies and return this object.
-	offsetted(x: number, y: number, w: number, h: number): VdpMap;
+	// Adds x and y to the current address and sets w/h. Modifies and return this instance of VdpMap.
+	offset(x: number, y: number, w: number, h: number): VdpMap;
 }
 
 class VdpPalette {
@@ -436,8 +436,8 @@ class VdpPalette {
 	w: number; // count (color units)
 	h: number; // number of rows (consecutive palettes)
 
-	// Adds y to the current address and sets w/h. Modifies and return this object.
-	offsetted(y: number, w: number, h: number): VdpPalette;
+	// Adds y to the current address and sets w/h. Modifies and return this instance of VdpPalette.
+	offset(y: number, w: number, h: number): VdpPalette;
 }
 
 class VdpSprite {
@@ -451,8 +451,8 @@ class VdpSprite {
 	hiColor: boolean; // whether it's a 8-bit-per-pixel tile (or 4-bit)
 	designPalette: string; // design palette name (can be overriden)
 
-	// Adds x and y to the current address and sets w/h. Modifies and return this object.
-	offsetted(x: number, y: number, w: number, h: number): VdpSprite;
+	// Adds x and y to the current address and sets w/h. Modifies and return this instance of VdpSprite.
+	offset(x: number, y: number, w: number, h: number): VdpSprite;
 	// Modifies this instance of VdpSprite (not the original) to target a given tile in a tileset.
 	tile(no: number): VdpSprite;
 }
