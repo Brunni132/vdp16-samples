@@ -8,14 +8,14 @@ declare class VdpMap {
 	designTileset: string;
 	designPalette: string;
 	constructor(x: number, y: number, w: number, h: number, designTileset: string, designPalette: string);
-	offsetted(x: number, y: number, w: number, h: number): VdpMap;
+	offset(x: number, y: number, w: number, h: number): VdpMap;
 }
 declare class VdpPalette {
 	y: number;
 	w: number;
 	h: number;
 	constructor(y: number, w: number, h: number);
-	offsetted(y: number, w: number, h: number): VdpPalette;
+	offset(y: number, w: number, h: number): VdpPalette;
 }
 declare class VdpSprite {
 	x: number;
@@ -28,7 +28,7 @@ declare class VdpSprite {
 	hiColor: boolean;
 	designPalette: string;
 	constructor(x: number, y: number, w: number, h: number, tw: number, th: number, tiles: number, hiColor: boolean, designPalette: string);
-	offsetted(x: number, y: number, w: number, h: number): VdpSprite;
+	offset(x: number, y: number, w: number, h: number): VdpSprite;
 	/**
 	 * Modifies this instance of VdpSprite (not the original) to target a given tile in a tileset.
 	 * @throws {Error} if this sprite is not a tileset.
@@ -337,7 +337,7 @@ export declare class VDP {
 	palette(name: string): VdpPalette;
 	/**
 	 * @param map name of the map (or map itself). You may also query an arbitrary portion of the map
-	 * memory using new VdpMap(…) or offset an existing map, using vdp.map('myMap').offsetted(…).
+	 * memory using new VdpMap(…) or offset an existing map, using vdp.map('myMap').offset(…).
 	 * @param source set to vdp.SOURCE_BLANK if you don't care about the current content of
 	 * the memory (you're going to write only and you need a buffer for that), vdp.SOURCE_CURRENT to read the current
 	 * contents of the memory (as was written the last time with writeMap) or vdp.SOURCE_ROM to get the original data
@@ -348,7 +348,7 @@ export declare class VDP {
 	readMap(map: string | VdpMap, source?: CopySource): Array2D;
 	/**
 	 * @param palette name of the palette (or palette itself). You may also query an arbitrary portion
-	 * of the palette memory using new VdpPalette(…) or offset an existing map, using vdp.map('myMap').offsetted(…).
+	 * of the palette memory using new VdpPalette(…) or offset an existing map, using vdp.map('myMap').offset(…).
 	 * @param source look at readMap for more info.
 	 * @return {Array2D} an array containing the color entries, encoded as 0xAABBGGRR
 	 */
@@ -364,7 +364,7 @@ export declare class VDP {
 	readPaletteMemory(x: number, y: number, w: number, h: number, source?: CopySource): Array2D;
 	/**
 	 * @param sprite name of the sprite (or sprite itself). You may also query an arbitrary portion of the
-	 * sprite memory using new VdpSprite(…) or offset an existing sprite, using vdp.sprite('mySprite').offsetted(…).
+	 * sprite memory using new VdpSprite(…) or offset an existing sprite, using vdp.sprite('mySprite').offset(…).
 	 * @param source look at readMap for more info.
 	 * @return a Array2D containing the tileset data. For hi-color sprites, each entry represents one pixel.
 	 * For lo-color sprites, each entry corresponds to two packed pixels, of 4 bits each.
@@ -375,7 +375,7 @@ export declare class VDP {
 	sprite(name: string): VdpSprite;
 	/**
 	 * @param map {string|VdpMap} name of the map (or map itself). You may also write to an arbitrary portion of the map
-	 * memory using new VdpMap(…) or offset an existing map, using vdp.map('myMap').offsetted(…).
+	 * memory using new VdpMap(…) or offset an existing map, using vdp.map('myMap').offset(…).
 	 * @param data {Array2D} map data to write (use readMap to create a buffer like that)
 	 */
 	writeMap(map: string | VdpMap, data: Array2D): void;
@@ -395,7 +395,7 @@ export declare class VDP {
 	writePaletteMemory(x: number, y: number, w: number, h: number, data: Array2D): void;
 	/**
 	 * @param sprite name of the sprite (or sprite itself). You may also write to an arbitrary portion
-	 * of the sprite memory using new VdpSprite(…) or offset an existing sprite, using vdp.sprite('mySprite').offsetted(…).
+	 * of the sprite memory using new VdpSprite(…) or offset an existing sprite, using vdp.sprite('mySprite').offset(…).
 	 * @param data {Array2D} the new data. For hi-color sprites, each entry represents one pixel. For lo-color sprites,
 	 * each entry corresponds to two packed pixels, of 4 bits each.
 	 */

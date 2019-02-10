@@ -46,7 +46,7 @@ const utils = require('./utils');
 //		for (let y = 0; y < mapHeight; y++) {
 //			for (let x = 0; x < mapWidth; x++) {
 //				const tileNo = layerData[i++] - 1;
-//				const paletteFlags = tileset.tiles[tileNo].paletteIndex << 12;
+//				const paletteFlags = tileset.tiles[tileNo].paletteIndex << 13;
 //				resultMap.setTile(x, y, tileNo | paletteFlags);
 //			}
 //		}
@@ -95,7 +95,7 @@ function readTmx(tmxFileName) {
 						console.log(`More than 4096 tiles in map ${layerName}`.formatAs(utils.FG_RED));
 						warned = true;
 					}
-					const paletteFlags = tileset.tiles[tileNo].paletteIndex << 12;
+					const paletteFlags = tileset.tiles[tileNo].paletteIndex << 13;
 					resultMap.setTile(x, y, tileNo | paletteFlags);
 				}
 			}

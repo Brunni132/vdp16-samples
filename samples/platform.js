@@ -187,7 +187,7 @@ class Mario {
 class TextLayer {
 	constructor() {
 		// Make it smaller, we don't need the full screen since it's only for the small window at the bottom
-		this.mapDef = vdp.map('text2').offsetted(0, 0, 43, 12);
+		this.mapDef = vdp.map('text2').offset(0, 0, 43, 12);
 		this.map = vdp.readMap(this.mapDef, vdp.CopySource.blank);
 	}
 	drawText(x, y, text) {

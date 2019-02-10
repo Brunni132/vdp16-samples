@@ -51,7 +51,7 @@ config({ compact: true, debug: false }, () => {
 			// Make the bottom use another palette, which we'll make rotate
 			for (let i = 112/8; i < map.height; i++)
 				for (let x = 0; x < map.width; x++)
-					map.setTile(x, i, map.getTile(x, i) | 1 << 12);
+					map.setTile(x, i, map.getTile(x, i) | 1 << 13);
 		});
 	});
 

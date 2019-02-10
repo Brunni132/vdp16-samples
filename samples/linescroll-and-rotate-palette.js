@@ -18,7 +18,6 @@ function *main() {
 			else scrollFactor = 0.45 + (i - 152) * 0.01;
 
 			const transform = mat3.create();
-			console.log(loop);
 			mat3.translate(transform, transform, [loop * scrollFactor, i]);
 			lineTransform.setLine(i, transform);
 		}
