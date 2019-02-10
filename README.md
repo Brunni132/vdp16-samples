@@ -97,7 +97,7 @@ colors.array[0] = backdropColor;
 vdp.writePaletteMemory(0, 0, 1, 1, colors);
 ```
 
-Note that the backdrop color **is not affected by color swap**. It stays solid on the whole screen. If you want to affect the background color, you may take the rear-most background layer and set a `LineColorArray` that targets the color 0 of its palette.
+Note: you can create a gradient affecting the backdrop by setting up a `LineColorArray` that targets the color 0 of palette no 0.
 
 `configBackgroundTransparency(opts: {op: TransparencyConfigOperation, blendSrc: number|string, blendDst: number|string})`
 
@@ -125,17 +125,13 @@ Draws a background tilemap layer.
 * You can override the palette and tileset used (normally the one that the tilemap has been converted with) by specifying `palette: 'otherPalette'` or `palette: vdp.palette('otherPalette')`.
 * You can scroll the layer using `scrollX` and `scrollY` (positive x goes to the left, negative x to the right, positive y goes downwards, negative y upwards). Scrolling affects only the layer in question, and notably not the objects. You may still need to keep track of a global "camera" and subtract its offset to the position of objects. Note that unlike objects, background layers do not have a position, they implicitely always fill the full screen.
 * You can limit the area covered by the tilemap layer by providing `winX`, `winY`, `winW` and/or `winH`. The unused area can then be used as an inset to draw a window.
-* You can specify a LineTransformationArray independently for each layer.
-* Tilemap layers cover the full screen and as such wrap around in case the map is smaller than the screen, or has been scrolled past its boundaries. You can turn off this behaviour by setting `wrap: false`. Pixels outside of the bounds will be drawn with the color 0 of the default palette for this map.
+* You can specify a `LineTransformationArray` independently for each layer.
+* Tilemap layers cover the full screen and as such wrap around in case the map is smaller than the screen, or has been scrolled past its boundaries. You can turn off this behaviour by setting `wrap: false`. Pixels outside of the bounds will be drawn with the last pixel in that direction (like `GL_CLAMP_TO_EDGE` for `glTexParam`).
 * If `transparent: true` is specified, the tilemap has the transparent attribute set. It will be rendered using the color effect configured through `vdp.configBackgroundTransparency`. Note that only one layer my set this attribute.
 
 `drawObject(sprite, x, y, opts: {palette?: string|VdpPalette, width?: number, height?: number, prio?: number, transparent?: boolean, flipH?: boolean, flipV?: boolean} = {})`
 
 Draws an object (sometimes also referred to as a sprite, but a sprite is actually the graphics data used for an object, and multiple objects may be drawn out of the same sprite). Sprites are called this way because they are normally small.
-
-`drawWindowTilemap(map: VdpMap|string, opts: {palette?: string|VdpPalette, scrollX?: number, scrollY?: number, wrap?: boolean, tileset?: string|VdpSprite, prio?: number} = {})`
-
-Fills the unused portion of the previous drawn tilemap layer with a sub-layer, which shares some properties of the main layer, but can have an independent scrolling or wrapping parameter, and use another palette/tileset/map. The window extends from only one border; in case your map has been drawn with an inset in many directions, the window will be placed on the top, left, right or bottom, in this order, if there's space available.
 
 `map(name: string): VdpMap`
 
@@ -196,6 +192,12 @@ Write an `Array2D` to a sprite/tileset, replacing its original data. See `writeM
 `mat3: mat3` module ([glMatrix](http://glmatrix.net/))
 
 `vec2: vec2` module ([glMatrix](http://glmatrix.net/))
+
+`LineColorArray` class (see the color swapping section)
+
+`LineTransformationArray` class (see the per-line screen transformation section)
+
+`CopySource` enum (see the DMA copies chapter)
 
 
 ## Transparency
@@ -263,10 +265,6 @@ Set the color replacement for the whole screen. Basically the color at (targetPa
 `setLine(lineNo: number, paletteIndex: number, paletteNumber: number)`
 
 Sets the color replacement for a line only.
-
-**Warning:** be careful when using color swap tricks. For one, the backdrop layer does not take in account the color replacements. It's drawn on the whole screen with the first color of the first palette for the current frame (index (0, 0)). Therefore you can not use a color swap targetting color (0, 0) to make a gradient background, typically used for skies on the Super Nintendo. However, if you try with only one background and one palette, it may appear to work. But what's happening is not the backdrop color cycling, it's actually that your background layer uses the palette 0 (the first one) and that you're replacing the color 0 (transparent) of that palette by another, opaque color. The transparent parts of the background layer then become opaque and of the color intended, replacing the backdrop. The effect appears to be just the same, but it means that the background layer is opaque and you can't place sprites behind it anymore for instance. Also, if you draw two background layers using the same palette, the second background will also have its transparent areas replaced by the opaque gradient colors, hiding the background underneath. If you want to do that, use another palette for the second background layer.
-
-Note that you can make transparent colors opaque using the color swap functionality. Typically, areas outside of a tilemap layer with `wrap: true` are drawn with the color 0 of the default palette for the map, and you may replace it with an opaque color (and reciprocally, you may make an opaque color transparent by replacing it with the index 0 of any palette). The `color-spot` sample retargets that palette entry to a grey tone so that everything outside of the layer is darkened.
 
 
 ## LineTransformationArray (per-line screen transformation)
@@ -483,7 +481,7 @@ config({ debug: true }, () => {
 
 This script defines two palettes ('characters' and 'background') and adds two sprites in the former: a rock (`gfx/rock.png`) and a "tileset", which is as mentioned earlier a tiled sprite. This means in this case that the `gfx/mario.png` file has more than one tile for our character. For instance it may do 64x16, which indicates that there are 4 16x16 tiles. We can then refer to these tiles individually when drawing the sprite 'mario' as an object on the screen, to create an animation.
 
-The second palette, 'background', contains a tiled map (tmx file). Note the lack of extension: the file will be created by the packer, so you don't need to provide more than just an image that represents the contents of your background. The image will be divided in tiles (16x16 in this case) and put into a tileset of up to 32x32 tiles (1024; the hard limit in a single layer is 4096 tiles), written as `gfx/background-til.png`. Your image should have been thought to be subdivided in tiles. The packer will also create a `gfx/background.tmx`. This file can be opened in TMX to modify and extend your level. You may even add additional tiles to `gfx/background-til.png` following the same scheme. The next time you start the packer, it will not pick up the original `gfx/background.png` image because the `gfx/background.tmx` exists: it will pack it and the tileset instead (you may thus delete `gfx/background.png`).
+The second palette, 'background', contains a tiled map (tmx file). Note the lack of extension: the file will be created by the packer, so you don't need to provide more than just an image that represents the contents of your background. The image will be divided in tiles (16x16 in this case) and put into a tileset of up to 32x32 tiles (1024; the hard limit in a single layer is 8192 tiles), written as `gfx/background-til.png`. Your image should have been thought to be subdivided in tiles. The packer will also create a `gfx/background.tmx`. This file can be opened in TMX to modify and extend your level. You may even add additional tiles to `gfx/background-til.png` following the same scheme. The next time you start the packer, it will not pick up the original `gfx/background.png` image because the `gfx/background.tmx` exists: it will pack it and the tileset instead (you may thus delete `gfx/background.png`).
 
 Graphics are currently packed in the most basic way: it starts at the top-left corner and advances from left to right. When there's no more room to add an item, it switches to the next row, whose height is the maximal height of all elements which have been added to it. Because of that, if you add a sprite of 16x200 and then many sprites of 16x16, you'll waste all the space below the other sprites, since it can't be used (the next line will start at (x, y) = (0, 200)). In case you're short of memory, you may want to arrange your graphics with that in mind. Just change the order in which you add them.
 
@@ -499,11 +497,11 @@ In this example, we can get away with just two tiles: one for the background and
 
 ![Sample misaligned grid](doc/gimp-grid-misaligned-example.png)
 
-However in this example, the third bench is misaligned and as such will require 2 more tiles, raising the total to four. Drawing big images without taking that in account may get your tile count overboard. Remember that the main advantage of tiled graphics is to reduce memory a lot. If you don't use this advantage, the 1 MB cart limit will be hit very quickly, even with 4-bit graphics data. You may also hit the 4096 tiles limit: maps can not hold more than that since the entries are 16-bit numbers and the top 4 bits are used to offset the palette index, allowing to use up to 16 distinct palettes per background layer.
+However in this example, the third bench is misaligned and as such will require 2 more tiles, raising the total to four. Drawing big images without taking that in account may get your tile count overboard. Remember that the main advantage of tiled graphics is to reduce memory a lot. If you don't use this advantage, the 1 MB cart limit will be hit very quickly, even with 4-bit graphics data. You may also hit the 8192 tiles limit: maps can not hold more than that since the entries are 16-bit numbers and the top 3 bits are used to offset the palette index, allowing to use up to 16 distinct palettes per background layer.
 
 **Convert the first version of your background, then edit it with [Tiled](https://www.mapeditor.org/)**; once your map has been converted the first time by the packer, it will generate a `tmx` and a `-til.png` file with the same name as your original image. Use Tiled to extend your map using the existing tiles, or add tiles to the tileset in the same way. See the chapter about packing graphics for more information.
 
-**Resist the urge to use many palettes.** It's not going to look much better than well made pixel art, and it's going to take you much more time to draw, increasing the chances that the result is bad more than anything. One palette per background layer, and 2-4 shared among all the common sprites for a given scene should be plenty.
+**Resist the urge to use many palettes.** It's not going to look much better than well made pixel art, and it's going to take you much more time to draw, increasing the chances that the result is bad more than anything. One palette per background layer, and 2-4 shared among all the common sprites for a given scene should be plenty. For the future, we're thinking about limiting to 8 palettes only; try to stick within that budget, at least per scene (i.e. not more than 8 palettes used at once).
 
 **Alpha channel is not used** other than to determine which colors get assigned the index 0 (transparent). No semi-transparency information can be directly embedded in the source graphics: you can only make a set of objects or a layer semi-transparent as specified in the Transparency section. In general, you need to forget about semi-transparency in the first place, since it's reserved for special effects and takes time to master properly. Think of it as the cherry over the cake rather than an essential part of your graphics to constantly worry about.
 
