@@ -26,11 +26,7 @@ function *main() {
 		// We have created another palette in the packer for the waterfall, named sonic1-bg-rotating
 		if (loop % 4 === 0) {
 			const pal = vdp.readPalette('sonic1-bg-rotating');
-			const lastCol = pal.getElement(4, 0);
-			pal.setElement(4, 0, pal.getElement(3, 0));
-			pal.setElement(3, 0, pal.getElement(2, 0));
-			pal.setElement(2, 0, pal.getElement(1, 0));
-			pal.setElement(1, 0, lastCol);
+			[pal.array[1], pal.array[2], pal.array[3], pal.array[4]] = [pal.array[4], pal.array[1], pal.array[2], pal.array[3]];
 			vdp.writePalette('sonic1-bg-rotating', pal);
 		}
 
