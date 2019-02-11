@@ -3,7 +3,7 @@ const { addColors, blank, config, image,map,multiPalette,palette,sprite,tileset,
 const SCREEN_WIDTH = 256, SCREEN_HEIGHT = 256;
 
 // Set debug: true (recommended) to generate a sample.png file that shows the layout of the video memory
-config({ compact: true, debug: false }, () => {
+config({ compact: true, debug: true }, () => {
 	palette('gradient', () => {
 		sprite('gradient', image('gradient.png'));
 	});

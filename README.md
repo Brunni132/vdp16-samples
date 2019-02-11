@@ -20,18 +20,18 @@ Your game can be distributed by uploading the contents of the `build/` directory
 
 
 # Technical specifications in a nutshell
-Resolution: 256x256 pixels.
-Colors: 16 per sprite / map tile, from 4096 (RGB 12 bits).
-1-2 backgrounds (tilemap) depending on the graphics mode.
-256 sprites (divided into 16x16, around enough to fill the screen), can be stretched or shrunk.
-Translucency effects (shadows, lights, reflection, filter…) on 1 BG or a set of sprites.
-Fade in/out support (1 color, 16 factors).
-Transformation (rotation, scaling, scrolling) of background layers, specifiable per-line.
-Per-line color swap, allowing gradients and various effects.
-ROM: around 1 MB (2048x512 pixels, 4096 colors and 512x512 map blocks).
-Transfer to video memory: 120 kB/sec.
-Code: javascript (not limited, except to 256 kB for the final script).
-Audio: undecided yet, but probably FM with customizable input waveforms. If you have an idea of how it should be, please get in touch :)
+* Resolution: 256x256 pixels.
+* Colors: 16 per sprite / map tile, from 4096 (RGB 12 bits).
+* 1-2 backgrounds (tilemap) depending on the graphics mode.
+* 256 sprites (divided into 16x16, around enough to fill the screen), can be stretched or shrunk.
+* Translucency effects (shadows, lights, reflection, filter…) on 1 BG or a set of sprites.
+* Fade in/out support (1 color, 16 factors).
+* Transformation (rotation, scaling, scrolling) of background layers, specifiable per-line.
+* Per-line color swap, allowing gradients and various effects.
+* ROM: around 1 MB (2048x512 pixels, 4096 colors and 512x512 map blocks).
+* Transfer to video memory: 120 kB/sec.
+* Code: javascript (not limited, except to 256 kB for the final script).
+* Audio: undecided yet, but probably FM with customizable input waveforms. If you have an idea of how it should be, please get in touch :)
 
 
 # Basics
@@ -60,7 +60,7 @@ Sample tileset:
 ![Sample tileset](doc/brin3-meta-2x.png)
 
 Map entries (numbers):
-![Map entries](doc/brin3-meta-2x.png)
+![Map entries](doc/brin3-map-2x.png)
 
 Resulting tilemap:
 ![Resulting tilemap](doc/brin3-full.png)
@@ -127,7 +127,7 @@ Draws a background tilemap layer.
 * You can limit the area covered by the tilemap layer by providing `winX`, `winY`, `winW` and/or `winH`. The unused area can then be used as an inset to draw a window.
 * You can specify a `LineTransformationArray` independently for each layer.
 * Tilemap layers cover the full screen and as such wrap around in case the map is smaller than the screen, or has been scrolled past its boundaries. You can turn off this behaviour by setting `wrap: false`. Pixels outside of the bounds will be drawn with the last pixel in that direction (like `GL_CLAMP_TO_EDGE` for `glTexParam`).
-* If `transparent: true` is specified, the tilemap has the transparent attribute set. It will be rendered using the color effect configured through `vdp.configBackgroundTransparency`. Note that only one layer my set this attribute.
+* If `transparent: true` is specified, the tilemap has the transparent attribute set. It will be rendered using the color effect configured through `vdp.configBackgroundTransparency`. Note that only one layer may set this attribute.
 
 `drawObject(sprite, x, y, opts: {palette?: string|VdpPalette, width?: number, height?: number, prio?: number, transparent?: boolean, flipH?: boolean, flipV?: boolean} = {})`
 
@@ -203,9 +203,9 @@ Write an `Array2D` to a sprite/tileset, replacing its original data. See `writeM
 ## Transparency
 Transparency in the VDP-16 is restricted in the following ways:
 
-* Only one parameter can be defined for the backgrounds and objects. That is, all transparent objects will use the same color effect.
-* There is no alpha channel, meaning that pixels are either opaque (color indexes 1 to 15) or transparent (color index 0). If an object/background is set as transparent, any opaque pixel will be blended with what's underneath using the transparency formula as defined by the user.
-* Transparent objects cannot blend among themselves. That is, if an object is on top of a transparent background, the transparent background is ignored and the object pixel is blended with the opaque object/BG underneath directly.
+* Only one parameter can be defined for the backgrounds and objects; all transparent objects will use the same color effect.
+* There is no alpha channel, meaning that pixels are either opaque (color indexes 1 to 15) or transparent (color index 0). If an object/background is set as transparent, any opaque (non-zero) pixel from the object drawn will be blended with the opaque pixel underneath, using the transparency formula as defined by the user.
+* Transparent objects cannot blend among themselves. That is, if an object is on top of a transparent background, the transparent background is ignored and the object pixel is blended with the opaque object/BG underneath directly. The same goes for overlaying transparent objects.
 
 These rules may take a bit of time to get used to, but they are extremely powerful. It just requires that you avoid using transparency where it's not needed. This should clean up your design a lot too.
 
@@ -274,7 +274,7 @@ It uses a matrices to make geometric transformation from a straight image to a d
 
 **Warning:** the per-line transformation works like the SNES and Game Boy Advance, meaning that the Y component is not inputted in the matrix transformation (this simplifies transformation calculations, since you'd have to subtract Y in an already pretty complex chain). Therefore, for simple transformations you need to add the line number by yourself on each line; if you set the identity matrix for every line, you'll just repeat the line 0 across the screen, getting weird vertical stripes, or nothing.
 
-Also keep in mind that the transformation doesn't operate on the background layer itself, but on the pixel position. Therefore you have pixel position -> matrix operation -> destination position in the background. Therefore if you pass a matrix scaled by 0.5 you'll actually have a display zoomed 2x, since it scales the pixel positions by 0.5, advancing more slowly in the background layer texture than normal, resulting in a zoom.
+Also keep in mind that the transformation doesn't operate on the background layer itself, but on the pixel position. Therefore you have pixel position -> matrix operation -> destination position in the background. For instance, if you pass a matrix scaled by 0.5 you'll actually have a display zoomed 2x, since it scales the pixel positions by 0.5, advancing more slowly in the background layer texture than normal, resulting in a zoom.
 
 This example divides the line number by two, resulting in a scale by two. The `vdp.mat3` and `vdp.vec2` modules use the same API as [glMatrix](http://glmatrix.net/).
 
