@@ -5,7 +5,7 @@ Although it reproduces an old school environment, it is not strictly limited to 
 
 The idea came as I was trying to develop a space shooter for the web. I wanted to used paletted graphics to alternate colors and make fun effects, and I also wanted parallax, screen tearing and mode 7 for some effects. As awesome as frameworks such as Pixi are, they just don't provide this functionality and it is hard to do it on your own. So I did it, and later found out that it was more fun if you had actually limitations. Having 8 layers and 256 colors per sprite like initially seems nice, but like most people I work much better within a budget. For me that meant maximize and having to make creative choices based on what I had. Therefore the limitations were born, and refined a lot over time, always in a goal to reduce the budget for games: if you use this or that functionality you lose something else, so don't over-engineer things, just choose what is appropriate for your game design, or let the limitations guide you on what you can achieve. Think having only one background layer and a few dozen sprites is limiting?  Look at this for example, it only uses one layer and much less sprites than the VDP-16 allows.
 
-https://youtu.be/OHyvX5dzwEI
+https://youtu.be/OHyvX5dzwEI?t=66
 
 
 
