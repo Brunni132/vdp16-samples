@@ -77,7 +77,7 @@
 
 <body onhashchange="reload();">
     <div id="content">
-        <canvas id="glCanvas" width="256" height="256" style="width: 512px; height: 512px;"></canvas>
+        <canvas id="glCanvas" width="256" height="256"></canvas>
     </div>
     <div id="demo-controls">
         <button type="button" id="explanation">Info about this demo…</button>
@@ -132,7 +132,8 @@
             }
         }
 
-        var canvas = document.querySelector('#content');
+        var contents = document.querySelector('#content');
+        var canvas = document.querySelector('#glCanvas');
         var demos = document.querySelector('#demos');
         var demoControls = document.querySelector('#demo-controls');
         var explanationButton = document.querySelector('#explanation');
@@ -147,6 +148,13 @@
             demos.parentNode.removeChild(demos);
             vdpLib.startStandalone('./build', sourceFile);
 
+            // Resize the canvas for the pixel ratio so that pixels are not stretched
+            var ratio = window.devicePixelRatio;
+            if (ratio < 2) {
+                canvas.style.width = `${256 / ratio * 2}px`;
+                canvas.style.height = `${256 / ratio * 2}px`;
+            }
+
             explanationButton.addEventListener('click', function () {
                 for (let i = 0; i < demoList.length; i++) {
                     if (demoList[i].name === name) {
@@ -159,7 +167,7 @@
                 window.location = 'https://github.com/Brunni132/vdp16-samples/blob/gh-pages/samples/' + name + '.js';
             });
         } else {
-            canvas.parentNode.removeChild(canvas);
+            contents.parentNode.removeChild(contents);
             demos.parentNode.removeChild(demoControls);
             appendDemos();
         }
