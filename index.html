@@ -72,6 +72,16 @@
             left: 0;
             bottom: 0;
         }
+
+        #my-infos {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            text-align: right;
+            color: #fff;
+            font-size: 24px;
+            font-family: Arial;
+        }
 	</style>
 </head>
 
@@ -83,6 +93,7 @@
         <button type="button" id="explanation">Info about this demo…</button>
         <button type="button" id="source-code">Source code for this demo…</button>
         <button type="button" id="back" onclick="window.history.back();">Go back to the demos…</button>
+        <div id="my-infos">Twitter: f_bron<br/>Github: Brunni132</div>
     </div>
     <div id="demos">
         <h1>VDP-16 Demos</h1>
@@ -95,6 +106,7 @@
     <script src="lib/vdp-lib.js"></script>
     <script>
         var demoList = [
+            { name: 'vdp-logo', description: 'A proposal for the logo, uses hardware features and a touch of retro.' },
             { name: 'scrolling-background', description: 'Simple scrolling background.' },
             { name: 'linescroll-and-rotate-palette', description: 'Same as the scrolling background, with simple effects that make it look alive. Uses only one static layer!', details: 'Uses per line transformations to create a parallax scrolling background with animated palette. Note that this screen would look very unattractive without the special effects (try it out!), yet nothing is done other than the parallax and cycling palette colors!' },
             { name: 'platform', description: 'Small platformer. Use WASD and J=run, K=jump, or ↑↓←→ and C=run, V=jump.', details: 'Small platformer. Use WASD and J=run, K=jump, or ↑↓←→ and C=run, V=jump. It contains many functionalities of a Mario engine, and aims to show that it\'s not that complicated to code on your own, without complex framework. You can jump, run, skid, and have proper collisions. It\'s missing enemies and any sort of dynamic objects' },
@@ -107,16 +119,16 @@
             { name: 'advanced-color-swap', description: 'More advanced demo coloring the sky, in the same way as SNES/Amiga/etc. games often did.', details: 'Makes a gradient sky, common in demos of the era.', details: 'Shows how to create a gradient sky using line color replacements. This demo uses the color swap functionality to replace the background color from a solid color to a color that changes every line. Colors are arranged properly to create a gradient from blue to purple. By default, the VDP-16 can only display 16 shades for a pure gradient like this one, however by using a striped pattern we can create the illusion of the double like on the Super Nintendo. We can then alternate the stripes every other frame, and with retina persistence it will be indistinguishable from a solid color.' },
             { name: 'fades', description: 'Demoes several historic techniques for fading the screen in/out.', details: 'Demoes several historic techniques for fading the screen in/out. You\'ll notably recognize the one used by Sega in Sonic and other titles, because this method allowed to create beautiful-looking fade in/out sequences by using a limited color set, so much that it was even used successfully on the Master System (Phantasy Star notably) which only had 64 distinct colors.' },
 
-            // { name: 'scroll-rotate-plane', description: 'Using both scroll and transformation (one for the whole screen).', details: '' },
-            // { name: 'map-tile-swap', description: 'Animates a tile from the background map by replacing it with another tile using video memory copies.', details: '' },
-            // { name: 'rainbow', description: 'Very simple demo that shows how to manipulate the background colors as hue/saturation/lightness, to rotate the colors of a layer like a rainbow.', details: '' },
-            // { name: 'cross-fade', description: 'Cross fade two layers.', details: 'Cross-fades (alpha blending) 2 planes by darkening and adding them together. The VDP-16 supports an unusual transparency scheme where the transparent objects are multiplied by a constant color and then added with the color of the background, itself multiplied by another constant color. This shows how to do simple semi-transparency by adding alpha * destination + (1 - alpha) * source.' },
-            // { name: 'obj-as-mask', description: 'Uses the properties of transparency to show a clear area inside a color effect. Basically per the doc, the VDP-16 can only blend top-level objects (highest priority) amongst lower-level, opaque objects. By using this, you may place another object on top of a transparent layer; since the priority of the object is higher than the BG, it will appear over the BG, and since the VDP-16 cannot mix 2 transparent sources, only the top-most object will appear transparent, directly over the opaque objects underneath, ignoring completely the transparent BG in this area. In this case we\'ve parametered the transparent objects to be invisible (1x destination + 0x source), so that they don\'t really appear, but just block the transparent BG, resulting in a mask effect.', details: '' },
-            // { name: 'shadow', description: 'Uses objects to cast shadows, with a different size depending on the target background layer (giving an illusion of depth). It works by superposing three objects: one is the Mario sprite, opaque, another is a 2-pixel-projected Mario with the transparent attribute and transparency configured to produce a shadow, and the third one is also a transparent, 5-pixel-projected Mario. Playing with the priorities and the fact that two transparent objects which overlap will not make a darker object but just replace each other, it projects a bigger shadow on the background plane (the 5px character) than on the front plane (the 2px character).', details: '' },
-            // { name: 'sprite-animation', description: 'Shows how to use the vdp.sprite() properties to animate a tileset.', details: '' },
-            // { name: 'sprite-limit', description: 'Shows what happens when you reach the sprite limitations. This demo shows a full screen stretched sprite that eats most of the capabilities of the sprite engine, and on top another image of Mario. Since the Mario object uses more sprite cells than the limit of 256 available (one cell is 16x16 pixels, even if your sprite uses only 1 pixel inside the cell: for instance a 17x16 pixel sprite takes 2 cells) it will only be drawn halfway. However when the sprite reaches the bounds of the screen, part of it becomes invisible and consumes less cells, allowing to draw more of it horizontally.', details: '' },
-            // { name: 'transformation-order', description: 'Explains some complex things about matrix calculation order. It\'s not an interesting demo by any mean, but you\'re welcome to check out the source.', details: '' },
-            // { name: 'your-game', description: 'Use the file your-game.js at the root to start your project! Modify it and reload.', details: '' },
+            { name: 'scroll-rotate-plane', description: 'Using both scroll and transformation (one for the whole screen).', details: '' },
+            { name: 'map-tile-swap', description: 'Animates a tile from the background map by replacing it with another tile using video memory copies.', details: '' },
+            { name: 'rainbow', description: 'Very simple demo that shows how to manipulate the background colors as hue/saturation/lightness, to rotate the colors of a layer like a rainbow.', details: '' },
+            { name: 'cross-fade', description: 'Cross fade two layers.', details: 'Cross-fades (alpha blending) 2 planes by darkening and adding them together. The VDP-16 supports an unusual transparency scheme where the transparent objects are multiplied by a constant color and then added with the color of the background, itself multiplied by another constant color. This shows how to do simple semi-transparency by adding alpha * destination + (1 - alpha) * source.' },
+            { name: 'obj-as-mask', description: 'Uses the properties of transparency to show a clear area inside a color effect. Basically per the doc, the VDP-16 can only blend top-level objects (highest priority) amongst lower-level, opaque objects. By using this, you may place another object on top of a transparent layer; since the priority of the object is higher than the BG, it will appear over the BG, and since the VDP-16 cannot mix 2 transparent sources, only the top-most object will appear transparent, directly over the opaque objects underneath, ignoring completely the transparent BG in this area. In this case we\'ve parametered the transparent objects to be invisible (1x destination + 0x source), so that they don\'t really appear, but just block the transparent BG, resulting in a mask effect.', details: '' },
+            { name: 'shadow', description: 'Uses objects to cast shadows, with a different size depending on the target background layer (giving an illusion of depth). It works by superposing three objects: one is the Mario sprite, opaque, another is a 2-pixel-projected Mario with the transparent attribute and transparency configured to produce a shadow, and the third one is also a transparent, 5-pixel-projected Mario. Playing with the priorities and the fact that two transparent objects which overlap will not make a darker object but just replace each other, it projects a bigger shadow on the background plane (the 5px character) than on the front plane (the 2px character).', details: '' },
+            { name: 'sprite-animation', description: 'Shows how to use the vdp.sprite() properties to animate a tileset.', details: '' },
+            { name: 'sprite-limit', description: 'Shows what happens when you reach the sprite limitations. This demo shows a full screen stretched sprite that eats most of the capabilities of the sprite engine, and on top another image of Mario. Since the Mario object uses more sprite cells than the limit of 256 available (one cell is 16x16 pixels, even if your sprite uses only 1 pixel inside the cell: for instance a 17x16 pixel sprite takes 2 cells) it will only be drawn halfway. However when the sprite reaches the bounds of the screen, part of it becomes invisible and consumes less cells, allowing to draw more of it horizontally.', details: '' },
+            { name: 'transformation-order', description: 'Explains some complex things about matrix calculation order. It\'s not an interesting demo by any mean, but you\'re welcome to check out the source.', details: '' },
+            { name: 'your-game', description: 'Use the file your-game.js at the root to start your project! Modify it and reload.', details: '' },
         ];
 
         function reload() {

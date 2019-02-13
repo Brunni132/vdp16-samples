@@ -65,4 +65,9 @@ config({ compact: true, debug: true }, () => {
 			map('mask-bg', 'mask-bg.png');
 		});
 	});
+
+	palette('vdp-logo', () => {
+		tiledMap('vdp-logo', 'vdp-logo', { tileWidth: 2, tileHeight: 2, tilesetWidth: 8, tilesetHeight: 128 });
+		tiledMap('vdp-logo-2', 'vdp-logo-2', { tileWidth: 8, tileHeight: 8, tilesetWidth: 4, tilesetHeight: 32 });
+	});
 });
