@@ -160,11 +160,15 @@
             demos.parentNode.removeChild(demos);
             vdpLib.startStandalone('./build', sourceFile);
 
-            // Resize the canvas for the pixel ratio so that pixels are not stretched
+            // Resize the canvas for the pixel ratio so that pixels are not stretched (for 100-200%)
             var ratio = window.devicePixelRatio;
             if (ratio < 2) {
                 canvas.style.width = `${256 / ratio * 2}px`;
                 canvas.style.height = `${256 / ratio * 2}px`;
+            } else {
+                ratio = Math.floor(ratio);
+                canvas.style.width = `${256 * ratio}px`;
+                canvas.style.height = `${256 * ratio}px`;
             }
 
             explanationButton.addEventListener('click', function () {
