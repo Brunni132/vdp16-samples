@@ -170,9 +170,25 @@ declare class LineTransformationArray {
 	buffer: Float32Array;
 	length: number;
 	constructor();
-	getLine(lineNo: any): mat3;
-	setAll(transformation: mat3): void;
+	getLine(lineNo: number): Float32Array;
+	identityAll(): void;
+	identityLine(lineNo: number): void;
+	resetAll(): void;
+	resetLine(lineNo: number): void;
+	rotateLine(lineNo: number, radians: number): void;
+	scaleLine(lineNo: number, scaleXY: number[]): void;
 	setLine(lineNo: number, transformation: mat3): void;
+	translateLine(lineNo: number, moveXY: number[]): void;
+	transformVector(lineNo: number, vectorXY: number): {
+		x: number;
+		y: number;
+	};
+	transformVectorInverse(lineNo: number, vectorXY: number): {
+		x: number;
+		y: number;
+	};
+	/** @internal */
+	private _getLine;
 }
 declare class LineColorArray {
 	buffer: Float32Array;
@@ -180,8 +196,8 @@ declare class LineColorArray {
 	targetPaletteNumber: number;
 	targetPaletteIndex: number;
 	constructor(targetPaletteIndex: number, targetPaletteNumber: number);
-	setAll(paletteIndex: number, paletteNumber: number): void;
-	setLine(lineNo: number, paletteIndex: number, paletteNumber: number): void;
+	setAll(_color: number): void;
+	setLine(lineNo: number, _color: number): void;
 }
 export declare class VDP {
 	_gl: WebGLRenderingContext;
@@ -215,13 +231,13 @@ export declare class VDP {
 	private _usedBgPixels;
 	private _usedObjCells;
 	private _usedVramWrites;
+	vec2: typeof vec2;
+	mat3: typeof mat3;
 	input: Input;
 	LineColorArray: typeof LineColorArray;
 	LineTransformationArray: typeof LineTransformationArray;
 	CopySource: typeof CopySource;
 	color: typeof color;
-	mat3: typeof mat3;
-	vec2: typeof vec2;
 	constructor(canvas: HTMLCanvasElement, imageDirectory: string, done: () => void);
 	/**
 	 * Configures the backdrop (background color that is always present).
@@ -400,6 +416,7 @@ export declare class VDP {
 	 * each entry corresponds to two packed pixels, of 4 bits each.
 	 */
 	writeSprite(sprite: string | VdpSprite, data: Array2D): void;
+	private _applyTransparencyConfig;
 	private _computeStats;
 	/**
 	 * Renders the machine in the current state. Only available for the extended version of the GPU.

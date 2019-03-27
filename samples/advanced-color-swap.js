@@ -9,19 +9,12 @@ function *main() {
 	const tmxPaletteNo = vdp.palette('tmx').y;
 	const swaps = [new vdp.LineColorArray(10, tmxPaletteNo), new vdp.LineColorArray(1, marioPaletteNo)];
 
-	// Set up the 2 palettes with a gradient (32 and 33, make them far enough so that they're not used)
-	const gradientPalette = vdp.readPaletteMemory(0, 32, 16, 2, vdp.CopySource.blank);
-	for (let i = 0; i < 16; i++) gradientPalette.setElement(i, 0, color.make(i * 16, 0, 128));
-	for (let i = 0; i < 16; i++) gradientPalette.setElement(i, 1, color.make(i * 16, i * 16, i * 16));
-	vdp.writePaletteMemory(0, 32, 16, 2, gradientPalette);
-
-	// Note that the color (0, 32) is not used, it's transparent so it will let the backdrop appear
-	vdp.configBackdropColor(gradientPalette.getElement(0, 0));
-
 	// Set up another gradient for Mario's costume. Note that here the color 0 is not transparent, because it
 	// originates from a non-zero pixel.
 	for (let i = 0; i < swaps[1].length; i++) {
-		swaps[1].setLine(i, Math.abs(i - swaps[1].length / 2) / 8, 33);
+		// * 2 so it goes between -256 to +256
+		const intensity = Math.abs(i - swaps[1].length / 2) * 2;
+		swaps[1].setLine(i, color.make(intensity, intensity, intensity));
 	}
 
 	while (true) {
@@ -35,7 +28,7 @@ function *main() {
 			let targetColorIndex;
 			if (floatingPart <= 0.5) targetColorIndex = Math.max(0, intensity - mesh);
 			else targetColorIndex = intensity;
-			swaps[0].setLine(i, targetColorIndex, 32);
+			swaps[0].setLine(i, color.make(targetColorIndex * 16, 0, 128));
 		}
 
 		vdp.drawBackgroundTilemap('tmx', { scrollX: 32, scrollY: 0 });
