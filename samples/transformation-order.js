@@ -38,8 +38,6 @@ const TextLayer = {
 			// This scrolls an additional tile left (16/2=8), then scales the whole render x1.5, giving a x3 render centered around the 3rd tile
 			mat3.translate(mat, mat, [16, 0]);
 			mat3.scale(mat, mat, [0.75, 0.75]);
-			// This is always necessary as the linebuffer always places the origin at the current line (like the GBA)
-			mat3.translate(mat, mat, [0, i]);
 
 			// Another sample
 			//// The order is as is: advance so that the origin is at the texture center (128, 128)

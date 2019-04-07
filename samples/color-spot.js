@@ -1,5 +1,3 @@
-const mat3 = vdp.mat3;
-
 function *main() {
 	let loop = 0;
 	const mario = { x: 120, y: 128, w: 16, h: 16 };
@@ -22,13 +20,11 @@ function *main() {
 				scale = Math.cos(angle) * circleRay;
 			}
 
-			const t = mat3.create();
-			// Centered on the 4th pixel of the mask-bg horizontally (the black stripe)
-			mat3.translate(t, t, [4, 0]);
-			mat3.scale(t, t, [1 / scale, 1 / scale]);
-			// This is a case where we want to use the row 0 all the time (the tilemap is only 8x1 pixels)
-			mat3.translate(t, t, [-center.x, 0]);
-			lineTransform.setLine(y, t);
+			// Centered on the 4th pixel of the mask-bg horizontally (the black stripe).
+			// Note that the y position does nothing because the map is 1-pixel tall and autorepeated.
+			lineTransform.translateLine(y, [4, 0]);
+			lineTransform.scaleLine(y, [1 / scale, 1 / scale]);
+			lineTransform.translateLine(y, [-center.x, 0]);
 		}
 
 		vdp.configBackgroundTransparency({ op: 'sub', blendDst: '#fff', blendSrc: '#fff' });

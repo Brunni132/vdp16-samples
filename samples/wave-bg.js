@@ -1,5 +1,3 @@
-const mat3 = vdp.mat3;
-
 function *main() {
 
 	while (true) {
@@ -19,12 +17,9 @@ function *main() {
 			wavePeriod -= 0.002;
 
 			const transformationArray = new vdp.LineTransformationArray();
-			const transformationMatrix = mat3.create();
-
 			for (let line = 0; line < vdp.screenHeight; line++) {
 				const horizOffset = Math.sin((line + loop) / wavePeriod);
-				mat3.fromTranslation(transformationMatrix, [horizOffset * waveForce, line]);
-				transformationArray.setLine(line, transformationMatrix);
+				transformationArray.translateLine(line, [horizOffset * waveForce, 0]);
 			}
 
 			vdp.drawBackgroundTilemap('level2', { scrollX: 700, lineTransform: transformationArray });

@@ -1,13 +1,11 @@
-const mat3 = vdp.mat3, vec2 = vdp.vec2;
-
 // You can play with that for the perspective
 function scaleAtLine(line) { return 100 / (line + 50); }
 
-function drawSprite(vdp, transformations, x, z, obj) {
+function drawSprite(transformations, x, z, obj) {
+	const {mat3, vec2} = vdp;
 	// I'll leave the computation to someone better at math than me ;) it's super inefficient but does the trick.
 	// Here I just try to find the screen-space line on which the sprite is the most fitted (if any) by doing the inverse
-	// transformation on each line; if it's right, the 'y' component of the transformed vector should be mostly equal to
-	// the line number itself.
+	// transformation on each line; if it's right, the 'y' component of the transformed vector should be around 0.
 	const mat = mat3.create();
 	const untransformed = vec2.fromValues(x, z);
 	const result = vec2.create();
@@ -25,12 +23,12 @@ function drawSprite(vdp, transformations, x, z, obj) {
 	// Once found, we transform the object using the scale level at that line.
 	// The current (result[0], result[1]) are the positions of the (center, bottom) anchor of the sprite
 	scale = 1 / scale;
-	vdp.drawObject(obj, result[0] - scale * obj.w / 2, line - scale * obj.h, { width: obj.w * scale, height: obj.h * scale, prio: 2 });
+	vdp.drawObject(obj, result[0] - scale * obj.w / 2, line - scale * obj.h, { width: obj.w * scale, height: obj.h * scale, prio: 2, transparent: true });
 }
 
-// Just a quick attempt. Use reference instead: https://www.coranac.com/tonc/text/mode7.htm
 function *main() {
 	const lineTransform = new vdp.LineTransformationArray();
+	const mat3 = vdp.mat3;
 	let loop = 0;
 
 	while (true) {
@@ -52,9 +50,12 @@ function *main() {
 			lineTransform.setLine(i, transformations[i]);
 		}
 
-		vdp.drawBackgroundTilemap('road', { lineTransform, winY: 0, wrap: true});
-		drawSprite(vdp, transformations, 512, 351, vdp.sprite('mario').tile(6));
-		drawSprite(vdp, transformations, 550, 400, vdp.sprite('level1').tile(11));
+		vdp.drawBackgroundTilemap('road', {lineTransform, winY: 0, wrap: true});
+		drawSprite(transformations, 512, 351, vdp.sprite('mario').tile(6));
+		drawSprite(transformations, 550, 400, vdp.sprite('level1').tile(11));
+
+		vdp.configBackgroundTransparency({ op: 'add', blendSrc: '#f00', blendDst: '#00f' });
+		vdp.drawBackgroundTilemap('level1', {transparent: true});
 
 		loop += 1;
 		yield;

@@ -131,7 +131,6 @@ declare enum Key {
 	NumKeys = 10
 }
 declare class Input {
-	private readonly keyState;
 	Key: typeof Key;
 	constructor();
 	/**
@@ -171,13 +170,12 @@ declare class LineTransformationArray {
 	length: number;
 	constructor();
 	getLine(lineNo: number): Float32Array;
-	identityAll(): void;
-	identityLine(lineNo: number): void;
 	resetAll(): void;
 	resetLine(lineNo: number): void;
 	rotateLine(lineNo: number, radians: number): void;
 	scaleLine(lineNo: number, scaleXY: number[]): void;
-	setLine(lineNo: number, transformation: mat3): void;
+	setAll(transformation: mat3 | Float32Array): void;
+	setLine(lineNo: number, transformation: mat3 | Float32Array): void;
 	translateLine(lineNo: number, moveXY: number[]): void;
 	transformVector(lineNo: number, vectorXY: number): {
 		x: number;
@@ -187,8 +185,6 @@ declare class LineTransformationArray {
 		x: number;
 		y: number;
 	};
-	/** @internal */
-	private _getLine;
 }
 declare class LineColorArray {
 	buffer: Float32Array;
@@ -443,5 +439,6 @@ export declare class VDP {
 	private _initMatrices;
 	_startFrame(): void;
 }
+export declare let vdp: VDP;
 export declare function startStandalone(resourceDirectory: string, scriptFile: string): void;
 export declare function startGame(canvasSelector: string, loadedCb: (vdp: VDP) => IterableIterator<void>): void;
