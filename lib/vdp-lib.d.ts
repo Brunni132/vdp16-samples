@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 import { mat3, mat4, vec2 } from 'gl-matrix';
 
 declare class VdpMap {
@@ -24,10 +26,10 @@ declare class VdpSprite {
 	h: number;
 	tw: number;
 	th: number;
-	tiles: number;
 	hiColor: boolean;
 	designPalette: string;
-	constructor(x: number, y: number, w: number, h: number, tw: number, th: number, tiles: number, hiColor: boolean, designPalette: string);
+	constructor(x: number, y: number, w: number, h: number, tw: number, th: number, hiColor: boolean, designPalette: string);
+	readonly tiles: number;
 	offset(x: number, y: number, w: number, h: number): VdpSprite;
 	/**
 	 * Modifies this instance of VdpSprite (not the original) to target a given tile in a tileset.
@@ -159,12 +161,16 @@ declare class Input {
 	private _translateKeyEvent;
 }
 export declare type TransparencyConfigOperation = 'add' | 'sub';
-declare enum CopySource {
+export declare enum CopySource {
 	current = 0,
 	rom = 1,
 	blank = 2
 }
-declare class LineTransformationArray {
+/**
+ * Use this class to provide a transformation for each line of the BG when drawing. You can create many kind of effects
+ * using this, look at the samples.
+ */
+export declare class LineTransformationArray {
 	_assignedId: number;
 	buffer: Float32Array;
 	length: number;
@@ -186,7 +192,7 @@ declare class LineTransformationArray {
 		y: number;
 	};
 }
-declare class LineColorArray {
+export declare class LineColorArray {
 	buffer: Float32Array;
 	length: number;
 	targetPaletteNumber: number;
@@ -440,5 +446,11 @@ export declare class VDP {
 	_startFrame(): void;
 }
 export declare let vdp: VDP;
-export declare function startStandalone(resourceDirectory: string, scriptFile: string): void;
-export declare function startGame(canvasSelector: string, loadedCb: (vdp: VDP) => IterableIterator<void>): void;
+export declare let input: Input;
+export declare function startStandalone({ resourceDir, scriptFile }: {
+	resourceDir: string;
+	scriptFile: string;
+}): void;
+export declare function startGame(canvasSelector: string, loadedCb: (vdp: VDP) => IterableIterator<void>, { resourceDir }?: {
+	resourceDir?: string;
+}): void;

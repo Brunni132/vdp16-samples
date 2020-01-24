@@ -28,10 +28,9 @@ function *main() {
 			if (intro < 100) {
 				intro += 2;
 				for (let i = 0; i < lineTransform.length; i++) {
-					const mat = vdp.mat3.create();
 					let x = Math.max(0, Math.floor(i / 2) - intro - 40);
-					vdp.mat3.translate(mat, mat, [i % 2 ? x : -x, 0]);
-					lineTransform.setLine(i, mat);
+					lineTransform.resetLine(i);
+					lineTransform.translateLine(i, [i % 2 ? x : -x, 0]);
 				}
 			}
 			else {

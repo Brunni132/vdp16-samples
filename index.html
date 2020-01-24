@@ -153,13 +153,13 @@
         var sourceCodeButton = document.querySelector('#source-code');
         var vdpLib = window['vdp-lib'];
         var hash = window.location.hash;
-        var sourceFile = './src/your-game.js';
+        var scriptFile = './src/your-game.js';
 
         if (hash && hash.length > 1) {
             var name = hash.slice(1);
-            if (hash != '#your-game') sourceFile = './samples/' + name + '.js';
+            if (hash != '#your-game') scriptFile = './samples/' + name + '.js';
             demos.parentNode.removeChild(demos);
-            vdpLib.startStandalone('./build', sourceFile);
+            vdpLib.startStandalone({ resourceDir: './build/', scriptFile: scriptFile });
 
             // Resize the canvas for the pixel ratio so that pixels are not stretched (for 100-200%)
             var ratio = window.devicePixelRatio;
