@@ -145,6 +145,10 @@ Returns the address of a palette. Can then be offsetted (see the DMA copies sect
 
 Reads the data for a map. The returned object is an `Array2D`, representing… a 2-dimensional array. You can get its `width`, `height` and a linear representation as a javascript array with `array`. You can then read and write safely to it by using `getElement(x: number, y: number): number` and `setElement(x: number, y: number, value: number)`.
 
+`readObjectList(map: string|VdpMap, source = CopySource.rom): object[]`
+
+Reads an object list (a type of map configured as such from the editor). It returns an array of objects, which contain the properties for each object on the map (id: the ID of the tile chosen for the object, x and y the position, and additional properties inputted by the user in the JSON). This is used to spawn objects at the beginning of a level.
+
 `readPalette(palette: string|VdpPalette, source = CopySource.current): Array2D`
 
 Reads the data for a single palette as an `Array2D` (see `vdp.readMap` for more info).
@@ -447,7 +451,7 @@ class VdpSprite {
 	h: number; // height of sprite or tileset as a whole (pixels)
 	tw: number; // tile width (pixels) if it's a tileset
 	th: number; // tile height (pixels) if it's a tileset
-	tiles: number; // number of (used) tiles in the tileset
+	readonly tiles: number; // number of tiles in the tileset
 	hiColor: boolean; // whether it's a 8-bit-per-pixel tile (or 4-bit)
 	designPalette: string; // design palette name (can be overriden)
 
