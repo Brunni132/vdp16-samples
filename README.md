@@ -10,14 +10,62 @@ https://youtu.be/OHyvX5dzwEI?t=66
 
 
 # Installing
-Just extracting the samples should be enough. Inside there's a `packer.exe` application for Windows. If you use another OS, you should use [npm](https://www.npmjs.com/). Run `npm install` the very first time from the terminal, then `npm run pack-and-serve` will do the same as running the `packer.exe`.
 
-Running the packer does two things: it converts and packs the graphics inside `gfx/` (see below for more information) and then starts a local web server, which simulates your game being online. After that you can just open your browser to the address specified (generally http://localhost:8080/) and the game should load.
+There are two packages, one relies on git and your node.js installation, and the other uses a native executable for your OS. If you can use git and node.js, it's best to do so as you'll benefit from hot-reload (your game auto-restarts as you save the code in your favorite editor) and updating is easier. Standalone installation is easier to deploy and is recommended for quickly testing out.
 
+## Download a native bundle
+
+Go to https://www.yaronet.com/topics/191586-getting-started-download-the-vdp-16 and get the link in the first post. This bundle will be updated regularly.
+
+## Manual method -- Windows
+
+On Windows, you need git for Windows and node.js. I recommend that you install the following:
+* [Git for Windows](https://gitforwindows.org/)
+* [Scoop](https://scoop.sh/) to install node.js
+
+Once you have both, open a terminal (look for Git bash in the Start menu) and type the following to set up node.js:
+
+```
+scoop install nvm
+nvm install 10.18.1
+nvm use 10.18.1
+```
+
+You can replace the version number with another (get the list of available versions with `nvm list available` and choose one that starts with 8 or more).
+
+## Manual method -- Mac
+On macOS, you just need to install node.js. For that, you need a package manager such as [homebrew](https://brew.sh), which itself can take a while to install. The good thing is that such a package manager can be useful to install a lot of software.
+
+Then type the following in the terminal:
+
+```
+brew install nvm
+nvm install 10
+nvm use 10
+```
+
+
+### Clone the repository -- any OS
+Now that you have git, open a terminal (git bash on Windows) and run the following command:
+
+```
+git clone --recurse-submodules https://github.com/Brunni132/vdp16-sample-game.git test-game
+```
+
+You can replace `test-game` with the name of the folder for your game. Now that it's done, you can move inside the directory, and install modules and start the editor:
+
+```
+cd test-game
+npm install
+npm run editor-open
+```
+
+These commands can take a while. After that, your default browser will open with the editor page. Congratulations!
 
 # Distributing
-Your game can be distributed by uploading the contents of the `build/` directory to any web server. Note that this is a development pre-version and is not licensed for use without my permission. It also will not work on older browsers (this would require additional steps which are going to be implemented shortly).
+Your game can be distributed by uploading the contents of your game directory to any web server. Note that this is a development pre-version and is not licensed for commercial use without my permission. It also will not work on older browsers (this would require additional steps which are going to be implemented shortly).
 
+You don't need the `node_modules` and `server` files, so you can save space by not uploading them.
 
 # Technical specifications in a nutshell
 * Resolution: 256x256 pixels.
@@ -28,7 +76,7 @@ Your game can be distributed by uploading the contents of the `build/` directory
 * Fade in/out support (1 color, 16 factors).
 * Transformation (rotation, scaling, scrolling) of background layers, specifiable per-line.
 * Per-line color swap, allowing gradients and various effects.
-* ROM: around 1 MB (2048x512 pixels, 4096 colors and 512x512 map blocks).
+* ROM: around 1 MB (2048x512 pixels, up to 481 colors onscreen and 512x512 map blocks).
 * Transfer to video memory: 120 kB/sec.
 * Code: javascript (not limited, except to 256 kB for the final script).
 * Audio: undecided yet, but probably FM with customizable input waveforms. If you have an idea of how it should be, please get in touch :)
@@ -39,7 +87,7 @@ The VDP-16 uses external graphics data, packed as PNG files. They are in the num
 
 Graphics data need to be built before launching/distributing the game, and are downloaded once at the startup of the game. After that, they are available in memory for read and write at any time. A copy of the ROM data is also kept for restoring data later in case you need it.
 
-Other than that, it requires a javascript script file, which represents your code, which is loaded and ran at startup. You can refresh the page after you've made a change to your `.js` file (thereafter referred to as the code). You need to rebuild the graphics in case you've changed anything in the `gfx/` directory, including the `packer-main.js`.
+Other than that, it requires a javascript script file, which represents your code, which is loaded and ran at startup. You can refresh the page after you've made a change to your `.js` file (thereafter referred to as the code).
 
 The VDP-16 uses **tilemap graphics**, which means that graphics are subdivided in "tiles" (rectangles of pixels), which are then composed on the screen using a grid called the map. The map is a 2D array where each of its entries is a numeric value indicating the number of the tile to display.
 
@@ -466,6 +514,8 @@ You may modify these properties to read from/write to alternate parts in the mem
 
 # Using graphics and converting data
 The VDP-16 comes bundled with a "packer" application. It can either be ran by `npm run pack-gfx` or by launching `packer.exe`.
+
+The editor acts as the packer by allowing you to directly edit the data (so if you use the editor, you don't need to worry about the packer).
 
 The packer works with images (PNG) and Tiled (tmx) tilemap files. It also has a script called `packer-main.js` which must be inside the `gfx/` directory. This script tells the packer which graphics to include, in which palette. The graphics are then converted, indexed and written to the corresponding external graphics data files (`build/sprites.png`, `build/maps.png` and `build/palettes.png`).
 
