@@ -193,13 +193,6 @@ export declare class LineColorArray {
 	setLine(lineNo: number, _color: number): void;
 }
 export declare class VDP {
-	vec2: typeof vec2;
-	mat3: typeof mat3;
-	input: Input;
-	LineColorArray: typeof LineColorArray;
-	LineTransformationArray: typeof LineTransformationArray;
-	CopySource: typeof CopySource;
-	color: typeof color;
 	constructor(canvas: HTMLCanvasElement, imageDirectory: string, done: () => void);
 	/**
 	 * Configures the backdrop (background color that is always present).
@@ -386,6 +379,18 @@ export declare class VDP {
 	 * each entry corresponds to two packed pixels, of 4 bits each.
 	 */
 	writeSprite(sprite: string | VdpSprite, data: Array2D): void;
+
+	vec2: typeof vec2;
+	mat3: typeof mat3;
+	input: Input;
+	LineColorArray: typeof LineColorArray;
+	LineTransformationArray: typeof LineTransformationArray;
+	CopySource: typeof CopySource;
+	color: typeof color;
+	/**
+	 * Set to true if the frame is not going to be rendered (because the host machine is too slow for full 60 FPS).
+	 */
+	skip: boolean;
 }
 export declare let vdp: VDP;
 export declare let input: Input;
