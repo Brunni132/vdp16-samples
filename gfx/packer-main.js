@@ -4,10 +4,6 @@ const SCREEN_WIDTH = 256, SCREEN_HEIGHT = 256;
 
 // Set debug: true (recommended) to generate a sample.png file that shows the layout of the video memory
 config({ compact: true, debug: true }, () => {
-	palette('gradient', () => {
-		sprite('gradient', image('gradient.png'));
-	});
-
 	palette('mario', () => {
 		tileset('mario', image('mario-luigi-2.png').rect(80, 32, 224, 16), 16, 16);
 	});
@@ -24,15 +20,11 @@ config({ compact: true, debug: true }, () => {
 		tileset('text', 'font.png', 8, 8, () => {
 			map('text', blank(SCREEN_WIDTH / 8, SCREEN_HEIGHT / 8));
 		});
-	});
 
-	palette('text2', () => {
 		tileset('text2', 'defaultFont.png', 8, 8, () => {
 			map('text2', blank(Math.ceil(SCREEN_WIDTH / 8), Math.ceil(SCREEN_HEIGHT / 8)));
 		});
-	});
 
-	palette('text3', () => {
 		tileset('text3', 'defaultFont6x8.png', 6, 8, () => {
 			map('text3', blank(Math.ceil(SCREEN_WIDTH / 6), Math.ceil(SCREEN_HEIGHT / 8)));
 		});

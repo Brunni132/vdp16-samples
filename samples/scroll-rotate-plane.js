@@ -1,6 +1,6 @@
-const mat3 = vdp.mat3;
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
 
-function *main() {
+export function *main() {
 	let loop = 0;
 	while (true) {
 		const array = new vdp.LineTransformationArray();

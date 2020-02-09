@@ -1,3 +1,5 @@
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
+
 const TextLayer = {
 	setup: function() {
 		this.map = vdp.readMap('text2', vdp.CopySource.blank);
@@ -17,7 +19,7 @@ const TextLayer = {
 	}
 };
 
-function *main() {
+export function *main() {
 	TextLayer.setup();
 	TextLayer.drawText(11, 14, 'Window demo');
 

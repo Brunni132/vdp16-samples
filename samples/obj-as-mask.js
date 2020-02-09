@@ -1,3 +1,5 @@
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
+
 class TextLayer {
 	constructor() {
 		this.map = vdp.readMap('text2', vdp.CopySource.blank);
@@ -8,7 +10,7 @@ class TextLayer {
 	}
 }
 
-function *main() {
+export function *main() {
 	const textLayer = new TextLayer(vdp);
 	let loop = 0;
 	let windowHeight = 0, windowTargetHeight = 0;

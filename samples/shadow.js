@@ -1,4 +1,6 @@
-function *main() {
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
+
+export function *main() {
 	const mario = {
 		x: 100, y: 142, w: 48, h: 48, vx: 0.5, vy: 0
 	};

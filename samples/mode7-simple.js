@@ -1,11 +1,11 @@
-const input = vdp.input;
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
 
 // You can play with that for the perspective. Basically the highest the line number, the lower on the screen, and the
 // highest the scaling, to give the impression that it's closer to the viewer.
 function scaleAtLine(line) { return 100 / (line + 50); }
 
 // Just a quick attempt. Use reference instead: https://www.coranac.com/tonc/text/mode7.htm
-function *main() {
+export function *main() {
 	const lineTransform = new vdp.LineTransformationArray();
 	const viewerPos = { x: 512, y: 0 };
 	let viewerAngle = 0;

@@ -1,4 +1,5 @@
-const color = vdp.color;
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
+
 const GRAVITY = 0.4;
 const TILE_SIZE = 16;
 const SHINING_BLOCK_COLORS = [color.make('#f93'), color.make('#f93'), color.make('#c50'), color.make('#810'), color.make('#810'), color.make('#c50')];
@@ -212,7 +213,7 @@ let camera = new Camera();
 let mapData;
 let frameNo = 0;
 
-function *main() {
+export function *main() {
 	const textLayer = new TextLayer();
 	const mario = new Mario();
 
@@ -222,7 +223,7 @@ function *main() {
 	textLayer.drawText(0, 10, 'Use arrow keys (or WASD) to move and C to  run, V to jump (or J/K).');
 
 	while (true) {
-		mario.update(vdp.input);
+		mario.update(input);
 		camera.update(mario);
 
 		vdp.drawBackgroundTilemap('level1', { scrollX: camera.x, wrap: false, winH: 224 });

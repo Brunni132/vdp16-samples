@@ -1,4 +1,5 @@
-const color = vdp.color;
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
+
 let loopIt = 0;
 
 function fadeNaiveBlack(colorsSource, colorsDest) {
@@ -204,7 +205,7 @@ const TextLayer = {
 	}
 };
 
-function *main() {
+export function *main() {
 	let fadeType = 0;
 	const palette1Original = vdp.readPalette('level1', vdp.CopySource.rom);
 	const fadeCustomStatus = new Array(palette1Original.array.length);

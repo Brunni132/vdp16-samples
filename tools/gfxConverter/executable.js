@@ -4,7 +4,7 @@ const { _restart } = require('./dsl');
 const { watch } = require('./watcher');
 const utils = require('./utils');
 const args = process.argv.slice(2);
-let noWatch = false, noServer = false;
+let noWatch = false;
 
 function packGfx() {
 	_restart();
@@ -29,7 +29,6 @@ args.forEach((v) => {
 		console.log(`Usage: packer [no-server] [no-watch]`);
 		process.exit();
 	}
-	else if (/no-server/.test(v)) noServer = true;
 	else if (/no-watch/.test(v)) noWatch = true;
 	else console.error(`Unrecognized argument ${v}`.formatAs(utils.FG_RED));
 });
@@ -38,16 +37,16 @@ process.chdir(gfxDir);
 console.log('Packing graphics into build directory…');
 packGfx();
 
-if (!noServer) {
-	const express = require('express');
-	const app = express();
-	const port = 8080;
-	app.use(express.static(projectDir));
-	app.listen(port, () => console.log(`Open your browser to: http://localhost:${port}/`));
-	if (noWatch) {
-		console.log('After you\'ve made changes to graphics, close and rerun this app'.formatAs(utils.BRIGHT, utils.FG_GREEN));
-	}
-}
+//if (!noServer) {
+//  const express = require('express');
+//  const app = express();
+//  const port = 8080;
+//  app.use(express.static(projectDir));
+//  app.listen(port, () => console.log(`Open your browser to: http://localhost:${port}/`));
+//  if (noWatch) {
+//    console.log('After you\'ve made changes to graphics, close and rerun this app'.formatAs(utils.BRIGHT, utils.FG_GREEN));
+//  }
+//}
 
 if (!noWatch) {
 	watch(path.join(projectDir, gfxDir), () => {

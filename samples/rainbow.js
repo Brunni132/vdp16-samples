@@ -1,6 +1,6 @@
-const color = vdp.color;
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
 
-function *main() {
+export function *main() {
 	let loop = 0;
 
 	vdp.configBackdropColor('#000');

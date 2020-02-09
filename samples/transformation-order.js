@@ -1,4 +1,4 @@
-const mat3 = vdp.mat3;
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
 
 const TextLayer = {
 	setup: function() {
@@ -67,7 +67,7 @@ const TextLayer = {
 	}
 };
 
-function *main() {
+export function *main() {
 	TextLayer.setup();
 	TextLayer.clear();
 	TextLayer.drawText(0, 0, `Hello world`);

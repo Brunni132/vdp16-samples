@@ -1,4 +1,6 @@
-function *main() {
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
+
+export function *main() {
 	let loop = 0;
 
 	// The color at (x, y) = (1, <position of palette level1>) in build/palettes.png is the one we want to modify

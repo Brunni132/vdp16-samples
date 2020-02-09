@@ -1,4 +1,6 @@
-function *main() {
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
+
+export function *main() {
 	while (true) {
 		let offset = 15;
 		let intro = -100;
@@ -9,11 +11,11 @@ function *main() {
 		const pals = vdp.readPaletteMemory(0, 0, 16, 8, vdp.CopySource.blank);
 		for (let j = 0; j < 7; j++) {
 			for (let i = 0; i < 16; i++) {
-				const col = vdp.color.toHsl(basePal.array[i]);
+				const col = color.toHsl(basePal.array[i]);
 				col.h = j / 7;
 				col.s = 1;
 				col.l *= 0.7;
-				pals.setElement(i, j + 1, vdp.color.makeFromHsl(col));
+				pals.setElement(i, j + 1, color.makeFromHsl(col));
 			}
 		}
 		for (let i = 0; i < 16; i++) {

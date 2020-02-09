@@ -1,4 +1,6 @@
-function *main() {
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
+
+export function *main() {
 	let loop = 0, animStep = 0;
 
 	// Black has been made transparent to spare one color

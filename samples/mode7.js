@@ -1,4 +1,4 @@
-const mat3 = vdp.mat3, vec2 = vdp.vec2;
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
 
 // You can play with that for the perspective
 function scaleAtLine(line) { return 100 / (line + 50); }
@@ -29,7 +29,7 @@ function drawSprite(vdp, transformations, x, z, obj) {
 }
 
 // Just a quick attempt. Use reference instead: https://www.coranac.com/tonc/text/mode7.htm
-function *main() {
+export function *main() {
 	const lineTransform = new vdp.LineTransformationArray();
 	let loop = 0;
 

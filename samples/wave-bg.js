@@ -1,5 +1,6 @@
-function *main() {
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
 
+export function *main() {
 	while (true) {
 		let loop = 0, waveForce = 0, wavePeriod = 14, fadeFactor = 255;
 

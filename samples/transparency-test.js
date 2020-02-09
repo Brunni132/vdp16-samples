@@ -1,3 +1,5 @@
+import {vdp, input, color, vec2, mat3} from "../lib/vdp-lib";
+
 // You can play with that for the perspective
 function scaleAtLine(line) { return 100 / (line + 50); }
 
@@ -26,9 +28,8 @@ function drawSprite(transformations, x, z, obj) {
 	vdp.drawObject(obj, result[0] - scale * obj.w / 2, line - scale * obj.h, { width: obj.w * scale, height: obj.h * scale, prio: 2, transparent: true });
 }
 
-function *main() {
+export function *main() {
 	const lineTransform = new vdp.LineTransformationArray();
-	const mat3 = vdp.mat3;
 	let loop = 0;
 
 	while (true) {
